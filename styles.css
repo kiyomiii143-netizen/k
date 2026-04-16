@@ -1,0 +1,51 @@
+.coin-glow { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4)); }
+.card-bg { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); }
+
+.promo-ribbon {
+    background: linear-gradient(to right, #f59e0b, #d97706);
+    border-bottom-right-radius: 0.75rem;
+    border-top-left-radius: 0.75rem;
+}
+
+#cart-drawer, #payment-view { 
+    transition: all 0.4s cubic-bezier(0.17, 0.67, 0.22, 1); 
+}
+
+#cart-drawer.translate-y-full {
+    visibility: hidden;
+    opacity: 0;
+}
+
+#qr-modal { transition: opacity 0.3s ease-in-out; }
+.main-content-wrapper { transition: padding-top 0.3s ease; }
+
+/* Fixed Layout Reset for Sticky Bar */
+#sticky-bar .pointer-events-auto {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    box-sizing: border-box; /* Prevents border from adding to height */
+}
+
+* { 
+    -webkit-tap-highlight-color: transparent; 
+    scroll-behavior: smooth;
+}
+
+input::-webkit-outer-spin-button, 
+input::-webkit-inner-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+
+[data-popover] [data-popper-arrow]::before { 
+    content: ''; 
+    position: absolute; 
+    width: 8px; 
+    height: 8px; 
+    background: white; 
+    transform: rotate(45deg); 
+    top: -4px; 
+    left: 0; 
+    border-left: 1px solid #e5e7eb; 
+    border-top: 1px solid #e5e7eb; 
+}
+
