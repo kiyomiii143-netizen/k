@@ -1,4 +1,9 @@
-// The common EMVCo prefix shared by your QR codes
+/**
+ * Vercel Spirit Coins - Official Logic
+ * Includes: Image Caching, Dynamic Pricing, Cart Management, and Fixed UI Strategy
+ */
+
+// Shared EMVCo QR Prefix
 const QR_PREFIX = "00020101021227830012com.p2pqrpay0111GXCHPHM2XXX02089996440303152170200000006560417DWQM4TK3JDNXHVH3U52046016530360854";
 
 const products = [
@@ -22,12 +27,16 @@ let cart = [];
 let isFlashSaleOver = false;
 let popperInstance = null;
 
+// Initial Load
 window.onload = async () => {
     await cacheImages();
     startTimer(180, document.querySelector('#timer'));
     initStore();
 };
 
+/**
+ * Persist images to localStorage to prevent repeated network requests
+ */
 async function cacheImages() {
     for (const [key, url] of Object.entries(ASSETS)) {
         let cached = localStorage.getItem(`cache_${key}`);
@@ -41,12 +50,15 @@ async function cacheImages() {
                     reader.readAsDataURL(blob);
                 });
                 localStorage.setItem(`cache_${key}`, cached);
-            } catch (e) { cached = url; } 
+            } catch (e) { cached = url; } // Fallback to URL
         }
         document.querySelectorAll(`[data-src="${key}"]`).forEach(el => el.src = cached);
     }
 }
 
+/**
+ * Render Product Grid
+ */
 function initStore() {
     const grid = document.getElementById('product-grid');
     const coinImg = localStorage.getItem('cache_logo') || ASSETS.logo;
@@ -63,9 +75,7 @@ function initStore() {
                 <span class="text-black text-[9px] font-black italic">+${p.diamond} (Bonus)</span>
             </div>
             
-            ${!isFlashSaleOver ? `
-                <div class="absolute top-2 right-2 bg-red-600/20 text-red-500 text-[10px] px-2 py-0.5 rounded font-black border border-red-500/30">30% OFF</div>
-            ` : ''}
+            ${!isFlashSaleOver ? `<div class="absolute top-2 right-2 bg-red-600/20 text-red-500 text-[10px] px-2 py-0.5 rounded font-black border border-red-500/30">30% OFF</div>` : ''}
 
             <div class="h-32 flex items-center justify-center p-4">
                 <img src="${coinImg}" class="w-16 h-16 coin-glow pointer-events-none">
@@ -78,20 +88,17 @@ function initStore() {
                         <span class="text-sm font-black text-yellow-500">${currentPrice} PHP</span>
                     </div>
                     <button class="add-to-cart-trigger pointer-events-auto bg-[#f3bc3e] text-black p-2 rounded-lg active:scale-90 transition-transform" data-id="${p.id}">
-                        <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
+                        <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     </button>
                 </div>
             </div>
         </div>`;
     }).join('');
 
-    grid.querySelectorAll('.add-to-cart-trigger').forEach(btn => {
-        btn.onclick = () => addToCart(parseInt(btn.dataset.id));
-    });
+    grid.querySelectorAll('.add-to-cart-trigger').forEach(btn => btn.onclick = () => addToCart(parseInt(btn.dataset.id)));
 }
 
+// Cart Management
 function addToCart(pid) {
     const p = products.find(x => x.id === pid);
     const price = isFlashSaleOver ? Math.round(p.basePrice * 1.3) : p.basePrice;
@@ -116,10 +123,7 @@ function updateTotalsOnly() {
 function renderCartList() {
     const container = document.getElementById('cart-items-container');
     const coinImg = localStorage.getItem('cache_logo') || ASSETS.logo;
-    if (cart.length === 0) { 
-        container.innerHTML = '<div class="text-center py-6 text-gray-400 uppercase text-xs font-bold">Empty</div>'; 
-        return; 
-    }
+    if (cart.length === 0) { container.innerHTML = '<div class="text-center py-6 text-gray-400 uppercase text-xs font-bold">Empty</div>'; return; }
     container.innerHTML = cart.map((i, idx) => `
         <div class="flex items-center space-x-4 border-b pb-4 last:border-0">
             <div class="w-12 h-12 bg-gray-50 rounded-lg p-1 border flex-shrink-0"><img src="${coinImg}" class="w-full h-full object-contain"></div>
@@ -153,15 +157,23 @@ function toggleCart() {
     }
 }
 
+/**
+ * Popper Alert using 'fixed' strategy to prevent layout shifts
+ */
 function showValidationPopover(targetId, msg) {
     const target = document.getElementById(targetId);
     const popover = document.getElementById('popover-validation');
     document.getElementById('popover-message').innerText = msg;
     if (popperInstance) popperInstance.destroy();
     popover.classList.remove('invisible', 'opacity-0');
+    
     popperInstance = Popper.createPopper(target, popover, {
         placement: 'top',
-        modifiers: [{ name: 'offset', options: { offset: [0, 8] } }]
+        strategy: 'fixed',
+        modifiers: [
+            { name: 'offset', options: { offset: [0, 12] } },
+            { name: 'preventOverflow', options: { boundary: 'viewport' } }
+        ]
     });
     setTimeout(() => { popover.classList.add('invisible', 'opacity-0'); }, 4000);
 }
@@ -174,19 +186,15 @@ function openPayment() {
     const coinImg = localStorage.getItem('cache_logo') || ASSETS.logo;
     const diaImg = localStorage.getItem('cache_diamond') || ASSETS.diamond;
 
-    if (cart.length === 0) { showValidationPopover('store-submit-btn', "Please select an item to purchase first."); return; }
-    
+    if (cart.length === 0) { showValidationPopover('store-submit-btn', "Please select an item first."); return; }
     if (!u || o.length !== 4) {
         document.getElementById('input-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
         if (!u) { showValidationPopover('uid_input', "A valid Player UID is required."); uidIn.focus(); }
-        else { showValidationPopover('otp_input', "Please enter the 4-digit verification code."); otpIn.focus(); }
+        else { showValidationPopover('otp_input', "Valid 4-digit OTP required."); otpIn.focus(); }
         return;
     }
-
     const paymentView = document.getElementById('payment-view');
-    paymentView.classList.remove('invisible', 'pointer-events-none');
-    paymentView.classList.remove('translate-y-full');
-
+    paymentView.classList.remove('invisible', 'pointer-events-none', 'translate-y-full');
     document.getElementById('payment-count').innerText = cart.reduce((s, i) => s + i.qty, 0);
     document.getElementById('payment-items-list').innerHTML = cart.map(i => `
         <div class="flex-shrink-0 text-center w-28 bg-gray-50 p-2 rounded-lg border">
@@ -205,9 +213,7 @@ function closePayment() {
 function showQR() {
     const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
     let qrFinalString = DEFAULT_QR;
-    if (!isFlashSaleOver && cart.length === 1 && cart[0].qty === 1) {
-        qrFinalString = QR_PREFIX + cart[0].qrData;
-    }
+    if (!isFlashSaleOver && cart.length === 1 && cart[0].qty === 1) qrFinalString = QR_PREFIX + cart[0].qrData;
     document.getElementById('qr-amount-display').innerText = total.toLocaleString() + ".00 PHP";
     const modal = document.getElementById('qr-modal');
     modal.classList.remove('hidden');
@@ -219,6 +225,7 @@ function showQR() {
 
 function hideQR() { document.getElementById('qr-modal').classList.remove('opacity-100'); setTimeout(() => document.getElementById('qr-modal').classList.add('hidden'), 300); }
 
+// Timer and Flash Sale Logic
 function dismissBanner() { 
     const banner = document.getElementById('sticky-banner');
     if (banner) {
@@ -227,7 +234,7 @@ function dismissBanner() {
     }
     isFlashSaleOver = true;
     initStore(); 
-    cart = []; 
+    cart = []; // Reset cart on price change
     updateTotalsOnly();
 }
 
@@ -237,10 +244,6 @@ function startTimer(duration, display) {
         min = parseInt(timer / 60, 10);
         sec = parseInt(timer % 60, 10);
         display.textContent = `${min < 10 ? "0" + min : min}:${sec < 10 ? "0" + sec : sec}`;
-        if (--timer < 0) {
-            clearInterval(interval);
-            dismissBanner();
-        }
+        if (--timer < 0) { clearInterval(interval); dismissBanner(); }
     }, 1000);
 }
-
