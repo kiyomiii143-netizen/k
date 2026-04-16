@@ -1,0 +1,26 @@
+.coin-glow { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4)); }
+.card-bg { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); }
+
+.promo-ribbon {
+    background: linear-gradient(to right, #f59e0b, #d97706);
+    border-bottom-right-radius: 0.75rem;
+    border-top-left-radius: 0.75rem;
+}
+
+#cart-drawer { 
+    transition: all 0.4s cubic-bezier(0.17, 0.67, 0.22, 1); 
+}
+
+#cart-drawer.translate-y-full {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.sticky-bar-base {
+    border-top: 1.5px solid rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
+}
+
+body { overscroll-behavior-y: none; }
+* { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
