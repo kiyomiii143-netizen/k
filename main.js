@@ -1,9 +1,3 @@
-/**
- * Vercel Spirit Coins - Official Logic
- * Final Version: Auto-Price Update on Expiry
- */
-
-// Shared EMVCo QR Prefix
 const QR_PREFIX = "00020101021227830012com.p2pqrpay0111GXCHPHM2XXX02089996440303152170200000006560417DWQM4TK3JDNXHVH3U52046016530360854";
 
 const products = [
@@ -67,7 +61,9 @@ function initStore() {
                 <img src="${diaImg}" class="w-3 h-3 object-contain">
                 <span class="text-black text-[9px] font-black italic">+${p.diamond} (Bonus)</span>
             </div>
+            
             ${!isFlashSaleOver ? `<div class="absolute top-2 right-2 bg-red-600/20 text-red-500 text-[10px] px-2 py-0.5 rounded font-black border border-red-500/30">30% OFF</div>` : ''}
+
             <div class="h-32 flex items-center justify-center p-4">
                 <img src="${coinImg}" class="w-16 h-16 coin-glow pointer-events-none">
             </div>
@@ -119,11 +115,7 @@ function renderCartList() {
             <div class="w-12 h-12 bg-gray-50 rounded-lg p-1 border flex-shrink-0"><img src="${coinImg}" class="w-full h-full object-contain"></div>
             <div class="flex-1">
                 <div class="flex justify-between font-black text-xs uppercase text-gray-900"><span>${i.name}</span><button onclick="removeItem(${idx})" class="text-gray-300 hover:text-red-500">✕</button></div>
-                <div class="flex items-center mt-2 border rounded w-max bg-white text-gray-900 shadow-sm">
-                    <button onclick="updateQty(${idx}, -1)" class="px-3 py-1">-</button>
-                    <span class="px-4 py-1 font-bold text-xs text-center min-w-[35px]">${i.qty}</span>
-                    <button onclick="updateQty(${idx}, 1)" class="px-3 py-1">+</button>
-                </div>
+                <div class="flex items-center mt-2 border rounded w-max bg-white text-gray-900 shadow-sm"><button onclick="updateQty(${idx}, -1)" class="px-3 py-1">-</button><span class="px-4 py-1 font-bold text-xs text-center min-w-[35px]">${i.qty}</span><button onclick="updateQty(${idx}, 1)" class="px-3 py-1">+</button></div>
             </div>
         </div>`).join('');
 }
@@ -153,6 +145,8 @@ function showValidationPopover(targetId, msg) {
     document.getElementById('popover-message').innerText = msg;
     if (popperInstance) popperInstance.destroy();
     popover.classList.remove('invisible', 'opacity-0');
+    
+    // Fixed strategy prevents popover from adjusting page height/bumping bar
     popperInstance = Popper.createPopper(target, popover, {
         placement: 'top',
         strategy: 'fixed',
@@ -211,10 +205,6 @@ function showQR() {
 
 function hideQR() { document.getElementById('qr-modal').classList.remove('opacity-100'); setTimeout(() => document.getElementById('qr-modal').classList.add('hidden'), 300); }
 
-/**
- * UPDATED: Price Conversion Logic
- * Items in cart are now recalculated instead of deleted.
- */
 function dismissBanner() { 
     const banner = document.getElementById('sticky-banner');
     if (banner) {
@@ -222,17 +212,9 @@ function dismissBanner() {
         document.getElementById('content-wrapper').classList.replace('pt-16', 'pt-4');
     }
     isFlashSaleOver = true;
-    
-    // Update existing cart items to the new prices
-    cart = cart.map(item => {
-        const originalProduct = products.find(p => p.id === item.id);
-        item.price = Math.round(originalProduct.basePrice * 1.3);
-        return item;
-    });
-
     initStore(); 
+    cart = []; 
     updateTotalsOnly();
-    renderCartList();
 }
 
 function startTimer(duration, display) {
