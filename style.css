@@ -7,7 +7,7 @@
     border-top-left-radius: 0.75rem;
 }
 
-#cart-drawer, #payment-view { 
+#cart-drawer { 
     transition: all 0.4s cubic-bezier(0.17, 0.67, 0.22, 1); 
 }
 
@@ -16,36 +16,11 @@
     opacity: 0;
 }
 
-#qr-modal { transition: opacity 0.3s ease-in-out; }
-.main-content-wrapper { transition: padding-top 0.3s ease; }
-
-/* Fixed Layout Reset for Sticky Bar */
-#sticky-bar .pointer-events-auto {
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    box-sizing: border-box; /* Prevents border from adding to height */
+.sticky-bar-base {
+    border-top: 1.5px solid rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
 }
 
-* { 
-    -webkit-tap-highlight-color: transparent; 
-    scroll-behavior: smooth;
-}
-
-input::-webkit-outer-spin-button, 
-input::-webkit-inner-spin-button { 
-    -webkit-appearance: none; 
-    margin: 0; 
-}
-
-[data-popover] [data-popper-arrow]::before { 
-    content: ''; 
-    position: absolute; 
-    width: 8px; 
-    height: 8px; 
-    background: white; 
-    transform: rotate(45deg); 
-    top: -4px; 
-    left: 0; 
-    border-left: 1px solid #e5e7eb; 
-    border-top: 1px solid #e5e7eb; 
-}
-
+body { overscroll-behavior-y: none; }
+* { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
