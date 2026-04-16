@@ -1,6 +1,6 @@
 /**
  * Vercel Spirit Coins - Official Logic
- * Includes: Image Caching, Dynamic Pricing, Cart Management, and Fixed UI Strategy
+ * Final Version: Auto-Price Update on Expiry
  */
 
 // Shared EMVCo QR Prefix
@@ -27,16 +27,12 @@ let cart = [];
 let isFlashSaleOver = false;
 let popperInstance = null;
 
-// Initial Load
 window.onload = async () => {
     await cacheImages();
     startTimer(180, document.querySelector('#timer'));
     initStore();
 };
 
-/**
- * Persist images to localStorage to prevent repeated network requests
- */
 async function cacheImages() {
     for (const [key, url] of Object.entries(ASSETS)) {
         let cached = localStorage.getItem(`cache_${key}`);
@@ -50,15 +46,12 @@ async function cacheImages() {
                     reader.readAsDataURL(blob);
                 });
                 localStorage.setItem(`cache_${key}`, cached);
-            } catch (e) { cached = url; } // Fallback to URL
+            } catch (e) { cached = url; }
         }
         document.querySelectorAll(`[data-src="${key}"]`).forEach(el => el.src = cached);
     }
 }
 
-/**
- * Render Product Grid
- */
 function initStore() {
     const grid = document.getElementById('product-grid');
     const coinImg = localStorage.getItem('cache_logo') || ASSETS.logo;
@@ -74,9 +67,7 @@ function initStore() {
                 <img src="${diaImg}" class="w-3 h-3 object-contain">
                 <span class="text-black text-[9px] font-black italic">+${p.diamond} (Bonus)</span>
             </div>
-            
             ${!isFlashSaleOver ? `<div class="absolute top-2 right-2 bg-red-600/20 text-red-500 text-[10px] px-2 py-0.5 rounded font-black border border-red-500/30">30% OFF</div>` : ''}
-
             <div class="h-32 flex items-center justify-center p-4">
                 <img src="${coinImg}" class="w-16 h-16 coin-glow pointer-events-none">
             </div>
@@ -98,7 +89,6 @@ function initStore() {
     grid.querySelectorAll('.add-to-cart-trigger').forEach(btn => btn.onclick = () => addToCart(parseInt(btn.dataset.id)));
 }
 
-// Cart Management
 function addToCart(pid) {
     const p = products.find(x => x.id === pid);
     const price = isFlashSaleOver ? Math.round(p.basePrice * 1.3) : p.basePrice;
@@ -157,16 +147,12 @@ function toggleCart() {
     }
 }
 
-/**
- * Popper Alert using 'fixed' strategy to prevent layout shifts
- */
 function showValidationPopover(targetId, msg) {
     const target = document.getElementById(targetId);
     const popover = document.getElementById('popover-validation');
     document.getElementById('popover-message').innerText = msg;
     if (popperInstance) popperInstance.destroy();
     popover.classList.remove('invisible', 'opacity-0');
-    
     popperInstance = Popper.createPopper(target, popover, {
         placement: 'top',
         strategy: 'fixed',
@@ -225,7 +211,10 @@ function showQR() {
 
 function hideQR() { document.getElementById('qr-modal').classList.remove('opacity-100'); setTimeout(() => document.getElementById('qr-modal').classList.add('hidden'), 300); }
 
-// Timer and Flash Sale Logic
+/**
+ * UPDATED: Price Conversion Logic
+ * Items in cart are now recalculated instead of deleted.
+ */
 function dismissBanner() { 
     const banner = document.getElementById('sticky-banner');
     if (banner) {
@@ -233,16 +222,23 @@ function dismissBanner() {
         document.getElementById('content-wrapper').classList.replace('pt-16', 'pt-4');
     }
     isFlashSaleOver = true;
+    
+    // Update existing cart items to the new prices
+    cart = cart.map(item => {
+        const originalProduct = products.find(p => p.id === item.id);
+        item.price = Math.round(originalProduct.basePrice * 1.3);
+        return item;
+    });
+
     initStore(); 
-    cart = []; // Reset cart on price change
     updateTotalsOnly();
+    renderCartList();
 }
 
 function startTimer(duration, display) {
     let timer = duration, min, sec;
     const interval = setInterval(() => {
-        min = parseInt(timer / 60, 10);
-        sec = parseInt(timer % 60, 10);
+        min = parseInt(timer / 60, 10); sec = parseInt(timer % 60, 10);
         display.textContent = `${min < 10 ? "0" + min : min}:${sec < 10 ? "0" + sec : sec}`;
         if (--timer < 0) { clearInterval(interval); dismissBanner(); }
     }, 1000);
