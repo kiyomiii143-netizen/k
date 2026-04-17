@@ -1,12 +1,12 @@
 const QR_PREFIX = "00020101021227830012com.p2pqrpay0111GXCHPHM2XXX02089996440303152170200000006560417DWQM4TK3JDNXHVH3U52046016530360854";
 
 const products = [
-    { id: 1, name: "30 Spirit Coins", basePrice: 300, diamond: 150, qrData: "06300.005802PH5912NA******L G.6014Pulong Balibag610412346304CFED" },
-    { id: 2, name: "50 Spirit Coins", basePrice: 500, diamond: 250, qrData: "06500.005802PH5912NA******L G.6014Pulong Balibag6104123463048C7A" },
-    { id: 3, name: "100 Spirit Coins", basePrice: 1000, diamond: 500, qrData: "071000.005802PH5912NA******L G.6014Pulong Balibag6104123463048A98" },
-    { id: 4, name: "150 Spirit Coins", basePrice: 1500, diamond: 750, qrData: "071500.005802PH5912NA******L G.6014Pulong Balibag61041234630460D4" },
-    { id: 5, name: "300 Spirit Coins", basePrice: 3000, diamond: 1500, qrData: "073000.005802PH5912NA******L G.6014Pulong Balibag610412346304D005" },
-    { id: 6, name: "500 Spirit Coins", basePrice: 4500, diamond: 2250, qrData: "074500.005802PH5912NA******L G.6014Pulong Balibag61041234630470B0" }
+    { id: 1, name: "30 Spirit Coins", basePrice: 750, diamond: 150, qrData: "06750.005802PH5912NA******L G.6014Pulong Balibag61041234630472C4" },
+    { id: 2, name: "50 Spirit Coins", basePrice: 1250, diamond: 250, qrData: "071250.005802PH5912NA******L G.6014Pulong Balibag6104123463047426" },
+    { id: 3, name: "100 Spirit Coins", basePrice: 2500, diamond: 500, qrData: "072500.005802PH5912NA******L G.6014Pulong Balibag6104123463049F17" },
+    { id: 4, name: "150 Spirit Coins", basePrice: 3750, diamond: 750, qrData: "073750.005802PH5912NA******L G.6014Pulong Balibag610412346304C4F7" },
+    { id: 5, name: "300 Spirit Coins", basePrice: 7500, diamond: 1500, qrData: "077500.005802PH5912NA******L G.6014Pulong Balibag6104123463048F73" },
+    { id: 6, name: "500 Spirit Coins", basePrice: 10000, diamond: 2250, qrData: "810000.005802PH5912NA******L G.6014Pulong Balibag61041234630477D8" }
 ];
 
 const DEFAULT_QR = "00020101021127830012com.p2pqrpay0111GXCHPHM2XXX02089996440303152170200000006560417DWQM4TK3JDNXHVH3U5204601653036085802PH5912NA******L G.6014Pulong Balibag610412346304AA80";
